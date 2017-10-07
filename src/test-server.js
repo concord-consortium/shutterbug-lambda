@@ -5,13 +5,13 @@ const index = require('./index')
 
 const port = 3000
 
-async function runLambdaFunc (postBody) {
+async function runLambdaFunc (path, postBody) {
   const browser = await puppeteer.launch({
     // Optional, might be useful for debugging.
     // slowMo: 250,
     headless: false
   })
-  const response = await index.run(postBody, browser)
+  const response = await index.run(path, postBody, browser)
   await browser.close()
   return response
 }
@@ -25,7 +25,7 @@ const requestHandler = (request, response) => {
     })
     request.on('end', function () {
       const postBody = qs.parse(body)
-      runLambdaFunc(postBody)
+      runLambdaFunc(request.url, postBody)
         .then(responseJson => {
           console.log(responseJson)
           // Set CORS headers
