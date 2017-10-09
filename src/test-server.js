@@ -1,5 +1,4 @@
 const http = require('http')
-const qs = require('querystring')
 const puppeteer = require('puppeteer')
 const index = require('./index')
 
@@ -17,22 +16,20 @@ async function runLambdaFunc (path, postBody) {
 }
 
 const requestHandler = (request, response) => {
-  console.log(request.url)
+  console.log(request.method, request.url)
   if (request.method === 'POST') {
     let body = ''
     request.on('data', function (data) {
       body += data
     })
     request.on('end', function () {
-      const postBody = qs.parse(body)
+      const postBody = JSON.parse(body)
       runLambdaFunc(request.url, postBody)
         .then(responseJson => {
-          console.log(responseJson)
+          console.log('RESPONSE:', responseJson)
           // Set CORS headers
           response.setHeader('Access-Control-Allow-Origin', '*')
-          response.setHeader('Access-Control-Request-Method', '*')
-          response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET')
-          response.setHeader('Access-Control-Allow-Headers', '*')
+          response.setHeader('Content-Type', 'application/json')
           response.end(JSON.stringify(responseJson))
         })
         .catch(err => {
