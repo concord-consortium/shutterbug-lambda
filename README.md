@@ -2,14 +2,14 @@
 
 This project is based on https://github.com/sambaiz/puppeteer-lambda-starter-kit (Starter Kit for running Headless-Chrome by Puppeteer on AWS Lambda).
 
-## Beta deployment
+## Deployment
 
-https://fh1fzvhx93.execute-api.us-east-1.amazonaws.com/beta/make-snapshot
+https://fh1fzvhx93.execute-api.us-east-1.amazonaws.com/production/make-snapshot
 
 Test:
 
-- `curl --data '{"content":"<p>Hello world!</p>","css":"<style>p { color: red; margin: 70px; }</style>","width":"400","height":"200","base_url":"http://concord.org"}' https://fh1fzvhx93.execute-api.us-east-1.amazonaws.com/beta/make-snapshot`
-- `curl --data '{"url":"http://concord.org","width":1000,"height":800}' https://fh1fzvhx93.execute-api.us-east-1.amazonaws.com/beta/make-snapshot`
+- `curl --data '{"content":"<p>Hello world!</p>","css":"<style>p { color: red; margin: 70px; }</style>","width":"400","height":"200","base_url":"http://concord.org"}' https://fh1fzvhx93.execute-api.us-east-1.amazonaws.com/production/make-snapshot`
+- `curl --data '{"url":"http://concord.org","width":1000,"height":800}' https://fh1fzvhx93.execute-api.us-east-1.amazonaws.com/production/make-snapshot`
 
 ## Run on local - basic test
 
