@@ -10,6 +10,7 @@ module.exports = function uploadToS3 (file) {
     const stream = fs.createReadStream(file)
     const key = path.basename(file)
     const params = {Bucket: bucket, Key: key, Body: stream}
+    console.log('uploading', file, 'to S3 bucket...')
     s3.upload(params, function (err, data) {
       if (err) {
         reject(err)
