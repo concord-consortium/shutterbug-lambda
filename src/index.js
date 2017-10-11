@@ -20,22 +20,29 @@ function getResponse (url) {
 
 exports.handler = async (event, context, callback) => {
   try {
+    // For keeping the browser launch
+    context.callbackWaitsForEmptyEventLoop = false
+
     console.log('processing request:')
     // Do not log body for now, as it can be huge (e.g. encoded canvas content).
     console.log(Object.assign({}, event, { body: '[displayed in the next log message]' }))
     console.log('request body length:', event.body.length)
     console.log('request body (first 250kB):')
     console.log(event.body.substring(0, 250000))
+
+    console.log('setting up the browser...')
+    const browser = await setup.getBrowser()
+    console.log('browser ready')
+
     // Input format is described here:
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-input-format
-    const path = event.path
-    const inputJson = JSON.parse(event.body)
-    // For keeping the browser launch
-    context.callbackWaitsForEmptyEventLoop = false
-    const browser = await setup.getBrowser()
-    const result = await exports.run(path, inputJson, browser)
-    console.log('screenshot ready:')
-    console.log(result)
+    const result = await exports.run(event.path, JSON.parse(event.body), browser)
+    console.log('screenshot ready:', result)
+
+    // Close the browser. It might seem not necessary, but otherwise there are protocol errors happening after
+    // a few requests. Browser launch doesn't increase processing time significantly.
+    await browser.close()
+
     // Output format:
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-output-format
     callback(null, {
