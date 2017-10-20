@@ -41,8 +41,10 @@ module.exports = async function makesSnapshot (options, browser) {
     console.warn(e)
   }
   console.log('page.goto done')
-  const screenshotPath = path.join('/tmp', `${new Date().getTime()}-${Math.round(Math.random() * 1e6)}.png`)
-  await page.screenshot({path: screenshotPath})
+  const screenshotKey = `${new Date().getTime()}-${Math.round(Math.random() * 1e6)}.png`
+  const buffer = await page.screenshot({ type: 'png' })
+  console.log('snapshot taken')
   await page.close()
-  return uploadToS3(screenshotPath)
+  console.log('page closed')
+  return uploadToS3(screenshotKey, buffer)
 }

@@ -26,7 +26,7 @@ const isBrowserAvailable = async (browser) => {
   try {
     await browser.version()
   } catch (e) {
-    debugLog(e) // not opened etc.
+    debugLog('browser not opened') // not opened etc.
     return false
   }
   return true
