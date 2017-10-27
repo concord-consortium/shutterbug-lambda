@@ -1,6 +1,8 @@
 const setup = require('./starter-kit/setup')
 const makeSnapshot = require('./lib/make-snapshot')
 
+const MAX_ATTEMPTS = 5
+
 function getOptions (input) {
   return {
     url: input.url,
@@ -18,6 +20,12 @@ function getResponse (url) {
   }
 }
 
+async function getBrowser () {
+  console.log('setting up the browser...')
+  // AWS-Lambda helper that setups the browsers (and tries to reuse existing one if it's available).
+  return setup.getBrowser()
+}
+
 exports.handler = async (event, context, callback) => {
   try {
     // For keeping the browser launch
@@ -30,18 +38,10 @@ exports.handler = async (event, context, callback) => {
     console.log('request body (first 250kB):')
     console.log(event.body.substring(0, 250000))
 
-    console.log('setting up the browser...')
-    const browser = await setup.getBrowser()
-    console.log('browser ready')
-
     // Input format is described here:
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-input-format
-    const result = await exports.run(event.path, JSON.parse(event.body), browser)
+    const result = await exports.run(event.path, JSON.parse(event.body), getBrowser)
     console.log('screenshot ready:', result)
-
-    // Close the browser. It might seem not necessary, but otherwise there are protocol errors happening after
-    // a few requests. Browser launch doesn't increase processing time significantly.
-    await browser.close()
 
     // Output format:
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-output-format
@@ -57,10 +57,33 @@ exports.handler = async (event, context, callback) => {
   }
 }
 
-exports.run = async (path, inputJson, browser) => {
+exports.run = async (path, inputJson, getBrowser) => {
   if (path === '/make-snapshot') {
-    const snapshotUrl = await makeSnapshot(getOptions(inputJson), browser)
-    return getResponse(snapshotUrl)
+    let attempt = 0
+    let snapshotUrl = null
+    let error = null
+    while (!snapshotUrl && attempt < MAX_ATTEMPTS) {
+      attempt += 1
+      const browser = await getBrowser()
+      try {
+        console.log('makeSnapshot, attempt:', attempt)
+        snapshotUrl = await makeSnapshot(getOptions(inputJson), browser)
+      } catch (err) {
+        console.log('error during makeSnapshot call')
+        console.log(err)
+        error = err
+      } finally {
+        // Close the browser. It might seem not necessary, but otherwise there are protocol errors happening after
+        // a few requests. Browser launch doesn't increase processing time significantly.
+        await browser.close()
+      }
+    }
+
+    if (snapshotUrl) {
+      return getResponse(snapshotUrl)
+    } else {
+      throw error
+    }
   }
   throw new Error(`unknown path: ${path}`)
 }

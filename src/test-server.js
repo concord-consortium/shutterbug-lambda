@@ -5,14 +5,14 @@ const index = require('./index')
 const port = 3000
 
 async function runLambdaFunc (path, postBody) {
-  const browser = await puppeteer.launch({
-    // Optional, might be useful for debugging.
-    // slowMo: 250,
-    headless: false
-  })
-  const response = await index.run(path, postBody, browser)
-  await browser.close()
-  return response
+  const getBrowser = async () => {
+    return puppeteer.launch({
+      // Optional, might be useful for debugging.
+      // slowMo: 250,
+      headless: false
+    })
+  }
+  return index.run(path, postBody, getBrowser)
 }
 
 const requestHandler = (request, response) => {

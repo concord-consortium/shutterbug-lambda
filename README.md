@@ -48,9 +48,23 @@ Requires AWS CLI tools installed and configured.
 
 `npm run deploy` or `npm run deploy-nochrome`
 
-## Build Headless-Chrome (optional)
+## Update Headless-Chrome
 
 This kit includes Chrome provided by `puppeteer-lambda-starter-kit` because official build Chrome installed by Puppeteer has problems about running on Lambda (missing shared library etc.).
+
+### Use Headless-Chrome prepared by serverless-chrome
+
+The easiest way seems to be to download ready build from:
+
+https://github.com/adieuadieu/serverless-chrome/tree/develop/packages/lambda/chrome
+
+then place it at /chrome dir, and finally update headless_shell.tar.gz symlink.
+Note that serverless-chrome is using .zip recently instead of .tar.gz, so it might be necessary
+to unpack and compress it again using `tar`.
+
+Remember to remove old Chrome so the package doesn't exceed 50MB AWS Lambda limit.
+
+### Build Headless-Chrome
 
 If you want to use latest chrome, run chrome/buildChrome.sh on EC2 having at least 16GB memory and 30GB volume. 
 See also [serverless-chrome](https://github.com/adieuadieu/serverless-chrome/blob/master/chrome/README.md).
