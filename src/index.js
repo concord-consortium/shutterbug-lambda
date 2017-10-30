@@ -1,3 +1,4 @@
+const execSync = require('child_process').execSync
 const setup = require('./starter-kit/setup')
 const makeSnapshot = require('./lib/make-snapshot')
 
@@ -37,6 +38,11 @@ exports.handler = async (event, context, callback) => {
     console.log('request body length:', event.body.length)
     console.log('request body (first 250kB):')
     console.log(event.body.substring(0, 250000))
+
+    console.log('cleanup /tmp dir')
+    execSync('rm -rf /tmp/*', { stdio: [0, 1, 2] })
+    console.log('tmp size: ')
+    execSync('du -sh /tmp/.', { stdio: [0, 1, 2] })
 
     // Input format is described here:
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-input-format
