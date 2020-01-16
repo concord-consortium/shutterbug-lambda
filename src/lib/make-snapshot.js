@@ -22,17 +22,24 @@ function getHtml (html = '', css = '', baseUrl = '') {
 
 module.exports = async function makesSnapshot (options, browser) {
   const page = await browser.newPage()
-  await page.setViewport({width: options.width, height: options.height})
-  console.log('calling page.goto...')
-  // .setContent could be more appropriate method, but it doesn't support waitUntil option.
-  // See: https://github.com/GoogleChrome/puppeteer/issues/728
-  await page.goto(options.url ? options.url : `data:text/html,${getHtml(options.html, options.css, options.baseUrl)}`,
-    {
+  await page.setViewport({ width: options.width, height: options.height })
+
+  if (options.url) {
+    console.log('calling page.goto...')
+    await page.goto(options.url, {
       timeout: 30000, // 30 seconds
-      waitUntil: 'networkidle',
-      networkIdleTimeout: 2500
+      waitUntil: 'networkidle0'
     })
-  console.log('page.goto done')
+    console.log('page.goto done')
+  } else {
+    console.log('calling page.setContent')
+    await page.setContent(getHtml(options.html, options.css, options.baseUrl), {
+      timeout: 30000, // 30 seconds
+      waitUntil: 'networkidle0'
+    })
+    console.log('page.setContent done')
+  }
+
   const screenshotKey = `${new Date().getTime()}-${Math.round(Math.random() * 1e6)}.png`
   const buffer = await page.screenshot({ type: 'png' })
   console.log('snapshot taken')

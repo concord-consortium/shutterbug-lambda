@@ -1,5 +1,4 @@
 const index = require('./index')
-const config = require('./starter-kit/config')
 const puppeteer = require('puppeteer');
 
 (async () => {
@@ -12,9 +11,8 @@ const puppeteer = require('puppeteer');
   }
   const getBrowser = async () => {
     return puppeteer.launch({
-      headless: false,
-      dumpio: !!config.DEBUG
-      // use chrome installed by puppeteer
+      slowMo: 500,
+      headless: false
     })
   }
   await index.run('/make-snapshot', testEvent, getBrowser)
