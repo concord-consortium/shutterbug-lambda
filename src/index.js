@@ -1,5 +1,5 @@
 const execSync = require('child_process').execSync
-const setup = require('./starter-kit/setup')
+const chromium = require('chrome-aws-lambda')
 const makeSnapshot = require('./lib/make-snapshot')
 
 const MAX_ATTEMPTS = 5
@@ -23,8 +23,12 @@ function getResponse (url) {
 
 async function getBrowser () {
   console.log('setting up the browser...')
-  // AWS-Lambda helper that setups the browsers (and tries to reuse existing one if it's available).
-  return setup.getBrowser()
+  return chromium.puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: false
+  })
 }
 
 exports.handler = async (event, context, callback) => {
