@@ -22,7 +22,7 @@
     "puppeteer-core": "^2.0.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.603.0",
+    "aws-sdk": "^2.814.0",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "puppeteer": "^2.0.0",
