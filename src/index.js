@@ -4,13 +4,18 @@ const makeSnapshot = require('./lib/make-snapshot')
 
 const MAX_ATTEMPTS = 5
 
+// Sometimes Chromebooks are not sending the width and height of the screen so we need
+// to use default values if they are not specified.
+const DEFAULT_WIDTH = 1920/2 // half of the default width of the browser
+const DEFAULT_HEIGHT = 1080/2 // half of the default height of the browser
+
 function getOptions (input) {
   return {
     url: input.url,
     html: input.content,
     css: input.css,
-    width: Math.ceil(Number(input.width)),
-    height: Math.ceil(Number(input.height)),
+    width: Math.ceil(Number(input.width || DEFAULT_WIDTH)),
+    height: Math.ceil(Number(input.height || DEFAULT_HEIGHT)),
     baseUrl: input.base_url
   }
 }
