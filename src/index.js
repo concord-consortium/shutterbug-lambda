@@ -1,5 +1,5 @@
 const execSync = require('child_process').execSync
-const chromium = require('chrome-aws-lambda')
+const chromium = require('@sparticuz/chrome-aws-lambda')
 const makeSnapshot = require('./lib/make-snapshot')
 
 const MAX_ATTEMPTS = 5
