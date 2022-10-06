@@ -103,13 +103,15 @@ exports.handler = async (event, context, callback) => {
 
 exports.run = async (path, inputJson) => {
   if (path === '/make-snapshot') {
-    console.time("make-snapshot")
+    console.time("complete request processing")
     let attempt = 0
     let snapshotUrl = null
     let error = null
     while (!snapshotUrl && attempt < MAX_ATTEMPTS) {
       attempt += 1
+      console.time("browser setup")
       const browser = await getBrowser()
+      console.timeEnd("browser setup")
       try {
         console.log('makeSnapshot, attempt:', attempt)
         snapshotUrl = await makeSnapshot(getOptions(inputJson), browser)
@@ -122,7 +124,7 @@ exports.run = async (path, inputJson) => {
       }
     }
 
-    console.timeEnd("make-snapshot")
+    console.timeEnd("complete request processing")
     if (snapshotUrl) {
       return getResponse(snapshotUrl)
     } else {
