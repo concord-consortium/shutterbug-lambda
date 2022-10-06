@@ -28,11 +28,13 @@ function getResponse (url) {
 
 async function getBrowser () {
   console.log('setting up the browser...')
+  const nonHeadless = process.env.HEADLESS === "false"
   return chromium.puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
-    headless: false
+    headless: !nonHeadless,
+    slowMo: nonHeadless ? 500 : undefined
   })
 }
 
@@ -55,7 +57,7 @@ exports.handler = async (event, context, callback) => {
 
     // Input format is described here:
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-input-format
-    const result = await exports.run(event.path, JSON.parse(event.body), getBrowser)
+    const result = await exports.run(event.path, JSON.parse(event.body))
     console.log('screenshot ready:', result)
 
     // Output format:
@@ -72,8 +74,9 @@ exports.handler = async (event, context, callback) => {
   }
 }
 
-exports.run = async (path, inputJson, getBrowser) => {
+exports.run = async (path, inputJson) => {
   if (path === '/make-snapshot') {
+    console.time("make-snapshot")
     let attempt = 0
     let snapshotUrl = null
     let error = null
@@ -94,6 +97,7 @@ exports.run = async (path, inputJson, getBrowser) => {
       }
     }
 
+    console.timeEnd("make-snapshot")
     if (snapshotUrl) {
       return getResponse(snapshotUrl)
     } else {

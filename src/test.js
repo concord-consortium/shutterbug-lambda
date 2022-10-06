@@ -1,5 +1,4 @@
-const index = require('./index')
-const puppeteer = require('puppeteer');
+const index = require('./index');
 
 (async () => {
   const testEvent = {
@@ -9,13 +8,7 @@ const puppeteer = require('puppeteer');
     "height": "200",
     "base_url": "http://concord.org"
   }
-  const getBrowser = async () => {
-    return puppeteer.launch({
-      slowMo: 500,
-      headless: false
-    })
-  }
-  await index.run('/make-snapshot', testEvent, getBrowser)
+  await index.run('/make-snapshot', testEvent)
     .then((result) => console.log(result))
     .catch((err) => console.error(err))
 })()
