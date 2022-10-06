@@ -42,27 +42,27 @@ let browserWSEndpoint
 async function getBrowser() {
   let browser
 
-  try {
-    if (browserWSEndpoint) {
-      console.log("connecting to existing browser")
-      browser = await chromium.puppeteer.connect({ browserWSEndpoint })
-    }
-    if (!browser || !browser.isConnected()) {
-      console.log("creating a new browser instance")
-      browser = await getNewBrowser()
-
-      // Keep one blank page open to keep the browser alive
-      browser.newPage()
-
-      browserWSEndpoint = browser.wsEndpoint()
-    }
-    return browser
-  } catch (e) {
-    if (browser) {
-      browser.close()
-    }
-    browserWSEndpoint = null
+  if (browserWSEndpoint) {
+    console.log("connecting to existing browser")
+    browser = await chromium.puppeteer.connect({ browserWSEndpoint })
   }
+  if (!browser || !browser.isConnected()) {
+    console.log("creating a new browser instance")
+    browser = await getNewBrowser()
+
+    // Keep one blank page open to keep the browser alive
+    await browser.newPage()
+
+    browserWSEndpoint = browser.wsEndpoint()
+  }
+  return browser
+}
+
+async function closeBrowser(browser) {
+  if (browser) {
+    await browser.close()
+  }
+  browserWSEndpoint = null
 }
 
 exports.handler = async (event, context, callback) => {
@@ -107,20 +107,26 @@ exports.run = async (path, inputJson) => {
     let attempt = 0
     let snapshotUrl = null
     let error = null
+    let browser = null
     while (!snapshotUrl && attempt < MAX_ATTEMPTS) {
       attempt += 1
-      console.time("browser setup")
-      const browser = await getBrowser()
-      console.timeEnd("browser setup")
+      console.log('makeSnapshot, attempt:', attempt)
       try {
-        console.log('makeSnapshot, attempt:', attempt)
+        console.time("browser setup")
+        browser = await getBrowser()
+        console.timeEnd("browser setup")
         snapshotUrl = await makeSnapshot(getOptions(inputJson), browser)
       } catch (err) {
         console.log('error during makeSnapshot call')
         console.log(err)
+        // Closing and reopening browser should make next attempt more likely to succeed
+        closeBrowser(browser)
+        browser = null
         error = err
       } finally {
-        browser.disconnect()
+        if (browser) {
+          browser.disconnect()
+        }
       }
     }
 
