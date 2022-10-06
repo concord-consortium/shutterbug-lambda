@@ -26,8 +26,7 @@ function getResponse (url) {
   }
 }
 
-async function getBrowser () {
-  console.log('setting up the browser...')
+async function getNewBrowser () {
   const nonHeadless = process.env.HEADLESS === "false"
   return chromium.puppeteer.launch({
     args: chromium.args,
@@ -36,6 +35,34 @@ async function getBrowser () {
     headless: !nonHeadless,
     slowMo: nonHeadless ? 500 : undefined
   })
+}
+
+let browserWSEndpoint
+
+async function getBrowser() {
+  let browser
+
+  try {
+    if (browserWSEndpoint) {
+      console.log("connecting to existing browser")
+      browser = await chromium.puppeteer.connect({ browserWSEndpoint })
+    }
+    if (!browser || !browser.isConnected()) {
+      console.log("creating a new browser instance")
+      browser = await getNewBrowser()
+
+      // Keep one blank page open to keep the browser alive
+      browser.newPage()
+
+      browserWSEndpoint = browser.wsEndpoint()
+    }
+    return browser
+  } catch (e) {
+    if (browser) {
+      browser.close()
+    }
+    browserWSEndpoint = null
+  }
 }
 
 exports.handler = async (event, context, callback) => {
@@ -91,9 +118,7 @@ exports.run = async (path, inputJson) => {
         console.log(err)
         error = err
       } finally {
-        // Close the browser. It might seem not necessary, but otherwise there are protocol errors happening after
-        // a few requests. Browser launch doesn't increase processing time significantly.
-        await browser.close()
+        browser.disconnect()
       }
     }
 
