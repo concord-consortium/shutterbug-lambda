@@ -14,7 +14,7 @@
     "babel": "rm -rf dist && mkdir dist && ./node_modules/.bin/babel src --out-dir dist",
     "test": "node src/test.js",
     "server": "node src/test-server.js",
-    "server-headless": "HEADLESS=true node src/test-server.js",
+    "server-non-headless": "HEADLESS=false node src/test-server.js",
     "lint": "standard --fix src/**/*.js"
   },
   "dependencies": {

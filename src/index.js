@@ -26,14 +26,43 @@ function getResponse (url) {
   }
 }
 
-async function getBrowser () {
-  console.log('setting up the browser...')
+async function getNewBrowser () {
+  const nonHeadless = process.env.HEADLESS === "false"
   return chromium.puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
-    headless: false
+    headless: !nonHeadless,
+    slowMo: nonHeadless ? 500 : undefined
   })
+}
+
+let browserWSEndpoint
+
+async function getBrowser() {
+  let browser
+
+  if (browserWSEndpoint) {
+    console.log("connecting to existing browser")
+    browser = await chromium.puppeteer.connect({ browserWSEndpoint })
+  }
+  if (!browser || !browser.isConnected()) {
+    console.log("creating a new browser instance")
+    browser = await getNewBrowser()
+
+    // Keep one blank page open to keep the browser alive
+    await browser.newPage()
+
+    browserWSEndpoint = browser.wsEndpoint()
+  }
+  return browser
+}
+
+async function closeBrowser(browser) {
+  if (browser) {
+    await browser.close()
+  }
+  browserWSEndpoint = null
 }
 
 exports.handler = async (event, context, callback) => {
@@ -55,7 +84,7 @@ exports.handler = async (event, context, callback) => {
 
     // Input format is described here:
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-input-format
-    const result = await exports.run(event.path, JSON.parse(event.body), getBrowser)
+    const result = await exports.run(event.path, JSON.parse(event.body))
     console.log('screenshot ready:', result)
 
     // Output format:
@@ -72,28 +101,36 @@ exports.handler = async (event, context, callback) => {
   }
 }
 
-exports.run = async (path, inputJson, getBrowser) => {
+exports.run = async (path, inputJson) => {
   if (path === '/make-snapshot') {
+    console.time("complete request processing")
     let attempt = 0
     let snapshotUrl = null
     let error = null
+    let browser = null
     while (!snapshotUrl && attempt < MAX_ATTEMPTS) {
       attempt += 1
-      const browser = await getBrowser()
+      console.log('makeSnapshot, attempt:', attempt)
       try {
-        console.log('makeSnapshot, attempt:', attempt)
+        console.time("browser setup")
+        browser = await getBrowser()
+        console.timeEnd("browser setup")
         snapshotUrl = await makeSnapshot(getOptions(inputJson), browser)
       } catch (err) {
         console.log('error during makeSnapshot call')
         console.log(err)
+        // Closing and reopening browser should make next attempt more likely to succeed
+        closeBrowser(browser)
+        browser = null
         error = err
       } finally {
-        // Close the browser. It might seem not necessary, but otherwise there are protocol errors happening after
-        // a few requests. Browser launch doesn't increase processing time significantly.
-        await browser.close()
+        if (browser) {
+          browser.disconnect()
+        }
       }
     }
 
+    console.timeEnd("complete request processing")
     if (snapshotUrl) {
       return getResponse(snapshotUrl)
     } else {

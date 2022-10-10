@@ -30,6 +30,8 @@ module.exports = async function makesSnapshot (options, browser) {
   // in time, but that is OK.
   uploadToS3(htmlKey, content, 'text/html')
 
+  console.time("page setup and loading")
+
   const page = await browser.newPage()
   await page.setViewport({ width: options.width, height: options.height })
 
@@ -53,5 +55,8 @@ module.exports = async function makesSnapshot (options, browser) {
   console.log('snapshot taken')
   await page.close()
   console.log('page closed')
+
+  console.timeEnd("page setup and loading")
+
   return uploadToS3(screenshotKey, buffer, 'image/png')
 }

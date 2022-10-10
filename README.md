@@ -1,4 +1,4 @@
-# Shutterbug AWS Lambda 
+# Shutterbug AWS Lambda
 
 ## Production:
 https://fh1fzvhx93.execute-api.us-east-1.amazonaws.com/production/make-snapshot
@@ -13,18 +13,18 @@ https://dgjr6g3z30.execute-api.us-east-1.amazonaws.com/staging/make-snapshot
 
 ## Basic test
 
-`npm run test` will run a simple test using Chrome in a regular, non-headless mode.
+`npm run test` will run a simple test using Chrome in a regular, headless mode.
 
 ## Run local webserver
 
-- `npm run server` starts a simple web server at `localhost:4000`. Chrome will be in regular mode, with 500ms slowdown. You can point Shutterbug JavaScript library to use it.
-- `npm run server-headless` starts a simple web server at `localhost:4000`. Chrome will be in headless mode. You can point Shutterbug JavaScript library to use it.
+- `npm run server` starts a simple web server at `localhost:4000`. Chrome will be in headless mode. You can point Shutterbug JavaScript library to use it.
+- `npm run server-non-headless` starts a simple web server at `localhost:4000`. Chrome will be in non-headless mode with 500ms slowdown. You can point Shutterbug JavaScript library to use it.
 
 Check https://github.com/concord-consortium/shutterbug.js library and its demo pages for local testing.
 
 ## Packaging & Deploy
 
-### Build Lambda package.zip 
+### Build Lambda package.zip
 
 Run `npm run package`, and deploy the package.zip using AWS Lambda CLI or website.
 
@@ -46,7 +46,7 @@ AWS Lambda's memory needs to be set to at least 384 MB, but the more memory, the
 ## Update Headless-Chrome
 
 Chrome is provided by `chrome-aws-lambda` (special build for AWS Lambda env) and `puppeteer` packages (local testing).
-Each version bundles different Chrome version. It should enough to update these packages (+ `puppeteer-core`) to 
+Each version bundles different Chrome version. It should enough to update these packages (+ `puppeteer-core`) to
 use a new Chrome version.
 
 ## License

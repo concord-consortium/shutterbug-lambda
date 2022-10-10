@@ -1,18 +1,10 @@
 const http = require('http')
-const puppeteer = require('puppeteer')
 const index = require('./index')
 
 const port = 4000
 
 async function runLambdaFunc (path, postBody) {
-  const getBrowser = async () => {
-    const headless = process.env.HEADLESS
-    return puppeteer.launch({
-      headless,
-      slowMo: headless ? false : 500 // slow down execution in non-headless mode
-    })
-  }
-  return index.run(path, postBody, getBrowser)
+  return index.run(path, postBody)
 }
 
 const requestHandler = (request, response) => {
