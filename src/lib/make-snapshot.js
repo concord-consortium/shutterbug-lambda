@@ -22,15 +22,15 @@ function getHtml (html = '', css = '', baseUrl = '') {
 
 module.exports = async function makesSnapshot (options, browser) {
   const baseKey = `${new Date().getTime()}-${Math.round(Math.random() * 1e6)}`
-  const screenshotKey = baseKey + ".png"
-  const htmlKey = baseKey + ".html"
+  const screenshotKey = baseKey + '.png'
+  const htmlKey = baseKey + '.html'
   const content = getHtml(options.html, options.css, options.baseUrl)
   // this helps with debugging issues with snapshots.
   // it is not waited for, so in some cases it might not complete the upload
   // in time, but that is OK.
   uploadToS3(htmlKey, content, 'text/html')
 
-  console.time("page setup and loading")
+  console.time('page setup and loading')
 
   const page = await browser.newPage()
   await page.setViewport({ width: options.width, height: options.height })
@@ -56,7 +56,7 @@ module.exports = async function makesSnapshot (options, browser) {
   await page.close()
   console.log('page closed')
 
-  console.timeEnd("page setup and loading")
+  console.timeEnd('page setup and loading')
 
   return uploadToS3(screenshotKey, buffer, 'image/png')
 }
