@@ -101,7 +101,8 @@ exports.handler = async (event, context, callback) => {
       body: JSON.stringify(result)
     })
   } catch (err) {
-    callback(new Error(err))
+    console.error('snapshot request failed:', err)
+    callback(err)
   }
 }
 

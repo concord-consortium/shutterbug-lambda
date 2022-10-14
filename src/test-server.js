@@ -27,6 +27,9 @@ const requestHandler = (request, response) => {
         .catch(err => {
           console.error('Request failed')
           console.error(err)
+          response.setHeader('Access-Control-Allow-Origin', '*')
+          response.setHeader('Content-Type', 'application/json')
+          response.statusCode = 500
           response.end(JSON.stringify({
             error: err
           }))
