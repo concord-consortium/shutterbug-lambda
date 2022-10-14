@@ -1,8 +1,7 @@
 const AWS = require('aws-sdk')
 
 const bucket = 'ccshutterbug'
-let s3 = new AWS.S3()
-
+const s3 = new AWS.S3()
 
 // This might see overcomplicated, but  S3 upload seems to randomly get stack once in a while.
 // See: https://www.pivotaltracker.com/story/show/183543485
@@ -13,7 +12,7 @@ module.exports = async function uploadToS3 (key, buffer, contentType) {
   console.log('uploading', key, 'to S3 bucket...')
   console.time('upload to s3')
 
-  let attempt = 0;
+  let attempt = 0
   let objectLocation = null
   let error
 
@@ -28,7 +27,7 @@ module.exports = async function uploadToS3 (key, buffer, contentType) {
         Body: buffer
       })
 
-      const timeoutId = setTimeout(function() {
+      const timeoutId = setTimeout(function () {
         managedUpload.abort()
       }, BASE_TIMEOUT * attempt)
 
