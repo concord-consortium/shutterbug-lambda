@@ -1,5 +1,6 @@
 dist
 package.zip
+package-*
 .local-chromium
 local-chromium.tar.gz
 
