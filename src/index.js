@@ -60,8 +60,12 @@ async function getBrowser() {
 
 async function closeBrowser(browser) {
   browserWSEndpoint = null
-  if (browser) {
-    await browser.close()
+  try {
+    if (browser && browser.isConnected()) {
+      await browser.close()
+    }
+  } catch (e) {
+    // nothing to do
   }
 }
 
