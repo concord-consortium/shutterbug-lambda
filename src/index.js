@@ -59,10 +59,14 @@ async function getBrowser() {
 }
 
 async function closeBrowser(browser) {
-  if (browser) {
-    await browser.close()
-  }
   browserWSEndpoint = null
+  try {
+    if (browser && browser.isConnected()) {
+      await browser.close()
+    }
+  } catch (e) {
+    // nothing to do
+  }
 }
 
 exports.handler = async (event, context, callback) => {
@@ -120,7 +124,7 @@ exports.run = async (path, inputJson) => {
         console.log('error during makeSnapshot call')
         console.log(err)
         // Closing and reopening browser should make next attempt more likely to succeed
-        closeBrowser(browser)
+        await closeBrowser(browser)
         browser = null
         error = err
       } finally {

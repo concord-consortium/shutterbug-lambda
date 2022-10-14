@@ -26,15 +26,15 @@ Check https://github.com/concord-consortium/shutterbug.js library and its demo p
 
 ### Build Lambda package.zip
 
-Run `npm run package`, and deploy the package.zip using AWS Lambda CLI or website.
+Note that the archived Shutterbug Lambda code is slightly bigger than 50MB, so it's impossible to upload the code using
+AWS CLI tools or directly in the AWS Lambda console. The archive needs to be uploaded to S3 first.
 
-### Upload package.zip to AWS Lambda using AWS CLI
+- Run `npm run package` to create a `package.zip` archive
+- Rename it to `package-v<VERSION>.zip` and upload to [concord-devops/shutterbug-lambda](https://s3.console.aws.amazon.com/s3/buckets/concord-devops?region=us-east-1&prefix=shutterbug-lambda/) S3 bucket
+- Open [Shutterbug AWS Lambda console](https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions/shutterbug?tab=code)
+  and click "Upload from" -> "Amazon S3 location". Then, provide an URL to the ZIP archive uploaded in a previous step and click "Save".
 
-Requires AWS CLI tools installed and configured.
-
-`npm run deploy-staging` or `npm run deploy-production`
-
-These scripts perform a full build process, packaging and finally upload archive to AWS.
+### AWS Lambda configuration
 
 AWS Lambda's memory needs to be set to at least 384 MB, but the more memory, the better the performance of any operations.
 
@@ -45,7 +45,7 @@ AWS Lambda's memory needs to be set to at least 384 MB, but the more memory, the
 
 ## Update Headless-Chrome
 
-Chrome is provided by `chrome-aws-lambda` (special build for AWS Lambda env) and `puppeteer` packages (local testing).
+Chrome is provided by `chrome-aws-lambda` (special build for AWS Lambda env).
 Each version bundles different Chrome version. It should enough to update these packages (+ `puppeteer-core`) to
 use a new Chrome version.
 
