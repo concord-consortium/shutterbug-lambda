@@ -6,7 +6,7 @@ const s3 = new AWS.S3()
 // This might seem overcomplicated, but  S3 upload seems to randomly get stuck once in a while.
 // See: https://www.pivotaltracker.com/story/show/183543485
 const MAX_ATTEMPTS = 5
-const BASE_TIMEOUT = 5000 // usually S3 upload takes around ~100ms, so that's plenty of time
+const BASE_TIMEOUT = 3500 // usually S3 upload takes around ~100ms, so that's plenty of time
 
 module.exports = async function uploadToS3 (key, buffer, contentType) {
   console.log('uploading', key, 'to S3 bucket...')
@@ -29,7 +29,7 @@ module.exports = async function uploadToS3 (key, buffer, contentType) {
 
       const timeoutId = setTimeout(function () {
         managedUpload.abort()
-      }, BASE_TIMEOUT * attempt)
+      }, BASE_TIMEOUT * Math.sqrt(attempt))
 
       const uploadResult = await managedUpload.promise()
       objectLocation = uploadResult.Location
