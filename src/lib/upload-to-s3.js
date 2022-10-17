@@ -3,7 +3,7 @@ const AWS = require('aws-sdk')
 const bucket = 'ccshutterbug'
 const s3 = new AWS.S3()
 
-// This might see overcomplicated, but  S3 upload seems to randomly get stack once in a while.
+// This might seem overcomplicated, but  S3 upload seems to randomly get stuck once in a while.
 // See: https://www.pivotaltracker.com/story/show/183543485
 const MAX_ATTEMPTS = 5
 const BASE_TIMEOUT = 5000 // usually S3 upload takes around ~100ms, so that's plenty of time
