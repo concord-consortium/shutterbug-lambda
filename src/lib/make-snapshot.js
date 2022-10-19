@@ -25,10 +25,9 @@ module.exports = async function makesSnapshot (options, browser) {
   const screenshotKey = baseKey + '.png'
   const htmlKey = baseKey + '.html'
   const content = getHtml(options.html, options.css, options.baseUrl)
+
   // this helps with debugging issues with snapshots.
-  // it is not waited for, so in some cases it might not complete the upload
-  // in time, but that is OK.
-  uploadToS3(htmlKey, content, 'text/html')
+  await uploadToS3(htmlKey, content, 'text/html')
 
   console.time('page setup and loading')
 
