@@ -8,7 +8,7 @@ const index = require('./index');
     "height": "200",
     "base_url": "http://concord.org"
   }
-  await index.run('/make-snapshot', testEvent)
+  await index.run('/', testEvent)
     .then((result) => console.log(result))
     .catch((err) => console.error(err))
 })()
