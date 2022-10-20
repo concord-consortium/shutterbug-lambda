@@ -69,6 +69,13 @@ async function closeBrowser(browser) {
   }
 }
 
+const headers = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS"
+};
+
 exports.handler = async (event, context, callback) => {
   try {
     // For keeping the browser launch
@@ -95,9 +102,7 @@ exports.handler = async (event, context, callback) => {
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-output-format
     callback(null, {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*'
-      },
+      headers,
       body: JSON.stringify(result)
     })
   } catch (err) {
@@ -107,40 +112,37 @@ exports.handler = async (event, context, callback) => {
 }
 
 exports.run = async (path, inputJson) => {
-  if (path === '/make-snapshot') {
-    console.time("complete request processing")
-    let attempt = 0
-    let snapshotUrl = null
-    let error = null
-    let browser = null
-    while (!snapshotUrl && attempt < MAX_ATTEMPTS) {
-      attempt += 1
-      console.log('makeSnapshot, attempt:', attempt)
-      try {
-        console.time("browser setup")
-        browser = await getBrowser()
-        console.timeEnd("browser setup")
-        snapshotUrl = await makeSnapshot(getOptions(inputJson), browser)
-      } catch (err) {
-        console.log('error during makeSnapshot call')
-        console.log(err)
-        // Closing and reopening browser should make next attempt more likely to succeed
-        await closeBrowser(browser)
-        browser = null
-        error = err
-      } finally {
-        if (browser) {
-          browser.disconnect()
-        }
+  console.time("complete request processing")
+  let attempt = 0
+  let snapshotUrl = null
+  let error = null
+  let browser = null
+  while (!snapshotUrl && attempt < MAX_ATTEMPTS) {
+    attempt += 1
+    console.log('makeSnapshot, attempt:', attempt)
+    try {
+      console.time("browser setup")
+      browser = await getBrowser()
+      console.timeEnd("browser setup")
+      snapshotUrl = await makeSnapshot(getOptions(inputJson), browser)
+    } catch (err) {
+      console.log('error during makeSnapshot call')
+      console.log(err)
+      // Closing and reopening browser should make next attempt more likely to succeed
+      await closeBrowser(browser)
+      browser = null
+      error = err
+    } finally {
+      if (browser) {
+        browser.disconnect()
       }
     }
-
-    console.timeEnd("complete request processing")
-    if (snapshotUrl) {
-      return getResponse(snapshotUrl)
-    } else {
-      throw error
-    }
   }
-  throw new Error(`unknown path: ${path}`)
+
+  console.timeEnd("complete request processing")
+  if (snapshotUrl) {
+    return getResponse(snapshotUrl)
+  } else {
+    throw error
+  }
 }
