@@ -88,10 +88,16 @@ exports.handler = async (event, context, callback) => {
     console.log('request body (first 250kB):')
     console.log(event.body.substring(0, 250000))
 
-    console.log('cleanup /tmp dir')
-    execSync('rm -rf /tmp/*', { stdio: [0, 1, 2] })
-    console.log('tmp size: ')
-    execSync('du -sh /tmp/.', { stdio: [0, 1, 2] })
+
+    // See: https://www.pivotaltracker.com/story/show/183569475
+    try {
+      console.log('cleanup /tmp dir')
+      execSync('rm -rf /tmp/*', { stdio: [0, 1, 2] })
+      console.log('tmp size: ')
+      execSync('du -sh /tmp/.', { stdio: [0, 1, 2] })
+    } catch (err) {
+      // Nothing to do, /tmp cleanup isn't critical.
+    }
 
     // Input format is described here:
     // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-input-format
