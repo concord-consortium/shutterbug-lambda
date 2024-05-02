@@ -1,5 +1,6 @@
 const execSync = require('child_process').execSync
-const chromium = require('@sparticuz/chrome-aws-lambda')
+const puppeteer = require('puppeteer-core')
+const chromium = require('@sparticuz/chromium')
 const makeSnapshot = require('./lib/make-snapshot')
 
 const MAX_ATTEMPTS = 5
@@ -8,6 +9,9 @@ const MAX_ATTEMPTS = 5
 // to use default values if they are not specified.
 const DEFAULT_WIDTH = 1920/2 // half of the default width of the browser
 const DEFAULT_HEIGHT = 1080/2 // half of the default height of the browser
+
+const nonHeadless = process.env.HEADLESS === "false"
+chromium.setHeadlessMode = !nonHeadless;
 
 function getOptions (input) {
   return {
@@ -27,12 +31,11 @@ function getResponse (url) {
 }
 
 async function getNewBrowser () {
-  const nonHeadless = process.env.HEADLESS === "false"
-  return chromium.puppeteer.launch({
+  return puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
-    headless: !nonHeadless,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
     slowMo: nonHeadless ? 500 : undefined
   })
 }
@@ -44,7 +47,7 @@ async function getBrowser() {
 
   if (browserWSEndpoint) {
     console.log("connecting to existing browser")
-    browser = await chromium.puppeteer.connect({ browserWSEndpoint })
+    browser = await puppeteer.connect({ browserWSEndpoint })
   }
   if (!browser || !browser.isConnected()) {
     console.log("creating a new browser instance")
