@@ -38,9 +38,10 @@ You can find Shutterbug template in the dedicated repository: https://github.com
 
 ## Update Headless-Chrome
 
-Chrome is provided by `chrome-aws-lambda` (special build for AWS Lambda env).
-Each version bundles different Chrome version. It should enough to update these packages (+ `puppeteer-core`) to
-use a new Chrome version.
+Chrome is provided by `@sparticuz/chromium`, a special build for the AWS Lambda environment. Each version bundles
+a different version of Chrome. Updating this package along with `puppeteer-core` and `puppeteer` should be enough to use
+a new version of Chrome. Note that the versions of `@sparticuz/chromium` and the `puppeteer-*` packages are strictly
+related. Please see notes about this here: https://www.npmjs.com/package/@sparticuz/chromium#install
 
 ## License
 
