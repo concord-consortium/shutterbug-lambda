@@ -35,6 +35,13 @@ These pages are very useful for testing the Shutterbug server. You can override 
 Note that more complex examples, such as Seismic Explorer or Hurricane Explorer, serve as the best tests for real-world scenarios,
 which often prove to be the most challenging for the Shutterbug server.
 
+### Configuring the Activity Player or Image Question / Labbook to use a Custom Server URL
+
+You can use the `?shutterbugUrl=` parameter when working with snapshots in the Activity Player. 
+Note that in the context of the Activity Player, snapshots can be initiated by different pages:
+- Activity Player initiates snapshots when one interactive requests a snapshot of another interactive (e.g., Image Question takes a snapshot of Seismic Explorer). In this case, you need to add the `?shutterbugUrl=` parameter to the Activity Player URL in your browser window.
+- Image Interactive or Labbook can initiate a snapshot of its own canvas. In this situation, you'll need to modify the Library Interactive to include the `?shutterbugUrl=` parameter.
+
 ## Packaging & Deploy
 
 Shutterbug is deployed using CloudFormation template. All the changes in configuration should be done there.
