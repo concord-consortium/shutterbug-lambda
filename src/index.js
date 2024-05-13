@@ -2,6 +2,10 @@ const execSync = require('child_process').execSync
 const puppeteer = require('puppeteer-core')
 const chromium = require('@sparticuz/chromium')
 const makeSnapshot = require('./lib/make-snapshot')
+const path = require('path')
+const fs = require('fs').promises
+
+const fontsDirectory = path.join(__dirname, 'fonts');
 
 const MAX_ATTEMPTS = 5
 
@@ -30,7 +34,42 @@ function getResponse (url) {
   }
 }
 
+async function listFontFiles(dir) {
+  let fontPaths = [];
+  try {
+      const files = await fs.readdir(dir, { withFileTypes: true });
+      for (const file of files) {
+          const fullPath = path.join(dir, file.name);
+          if (file.isDirectory()) {
+              fontPaths = fontPaths.concat(await listFontFiles(fullPath));  // Recurse into subdirectories
+          } else if (file.name.endsWith('.ttf')) {
+              fontPaths.push(fullPath);
+          }
+      }
+  } catch (error) {
+      console.error('Error reading directory:', error);
+  }
+  return fontPaths;
+}
+
+async function loadFonts() {
+  console.time("fonts loading")
+  const absoluteFontPaths = await listFontFiles(fontsDirectory)
+
+  for (let fontPath of absoluteFontPaths) {
+    try {
+      await chromium.font(fontPath);
+      console.log(`Font loaded: ${fontPath}`)
+    } catch (error) {
+      console.error(`Error loading font ${fontPath}: ${error}`)
+    }
+  }
+  console.timeEnd("fonts loading")
+}
+
 async function getNewBrowser () {
+  await loadFonts()
+
   return puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,

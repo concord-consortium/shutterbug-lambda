@@ -86,6 +86,17 @@ to the staging server.
 
 If everything works fine, you can finally deploy to `shutterbug-production`.
 
+## Fonts
+
+AWS Lambda does not have any common fonts preloaded. The @sparticuz/chromium package includes only the Open Sans font.
+You can place custom TTF fonts in the src/fonts directory; they will be preloaded before Chromium is launched.
+Currently, the setup primarily includes web fonts often used by CC simulations. In theory, this should not be necessary,
+as these fonts are typically loaded via a font tag pointing to Google Fonts. However, it may reduce the number of issues
+encountered when a font fails to load correctly.
+
+It would be more useful to provide fonts like Arial and Helvetica. However, this could be problematic due to licensing
+issues and would require research.
+
 ## License
 
 MIT
