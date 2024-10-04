@@ -18,14 +18,15 @@
     "lint": "standard --fix src/**/*.js"
   },
   "dependencies": {
-    "@sparticuz/chromium": "123.0.1",
-    "puppeteer-core": "22.8.1",
-    "aws-sdk": "^2.1612.0"
+    "@aws-sdk/client-s3": "^3.664.0",
+    "@aws-sdk/lib-storage": "^3.664.0",
+    "@sparticuz/chromium": "126.0.0",
+    "puppeteer-core": "22.13.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "puppeteer": "22.8.1",
+    "puppeteer": "22.13.1",
     "standard": "^17.1.0"
   }
 }
