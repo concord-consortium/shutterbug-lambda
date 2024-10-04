@@ -13,7 +13,7 @@ https://api.concord.org/shutterbug-staging
 
 ## Local setup
 
-In AWS this runs with a version of Node specificied by shutterbug-lambda CloudFormation template. The same version of node should be used for local developement. The package.json `engines.node` version should match the version used in AWS.
+In AWS this runs with a version of Node specified by shutterbug-lambda CloudFormation template. The same version of Node should be used for local development. The package.json `engines.node` version should match the version used in AWS.
 
 ## Basic test
 
