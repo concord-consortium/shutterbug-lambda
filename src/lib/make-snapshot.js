@@ -54,7 +54,7 @@ module.exports = async function makesSnapshot (options, browser) {
   await page.evaluateHandle('document.fonts.ready')
   console.log('fonts loaded')
 
-  const buffer = await page.screenshot({ type: 'png' })
+  const buffer = await page.screenshot({ type: 'png', fullPage: options.fullPage })
   console.log('snapshot taken')
   await page.close()
   console.log('page closed')
