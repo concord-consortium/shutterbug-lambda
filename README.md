@@ -11,6 +11,10 @@ https://api.concord.org/shutterbug-staging
 - `curl --data '{"content":"<p>Hello world!</p>","css":"<style>p { color: red; margin: 70px; }</style>","width":"400","height":"200","base_url":"http://concord.org"}' https://api.concord.org/shutterbug-production`
 - `curl --data '{"url":"http://concord.org","width":1000,"height":800}' https://api.concord.org/shutterbug-production`
 
+## Local setup
+
+In AWS this runs with a version of Node specificied by shutterbug-lambda CloudFormation template. The same version of node should be used for local developement. The package.json `engines.node` version should match the version used in AWS.
+
 ## Basic test
 
 `npm run test` will run a simple test using Chrome in a regular, headless mode.

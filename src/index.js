@@ -1,3 +1,4 @@
+'use strict';
 const execSync = require('child_process').execSync
 const puppeteer = require('puppeteer-core')
 const chromium = require('@sparticuz/chromium')

@@ -1,3 +1,4 @@
+'use strict';
 const uploadToS3 = require('./upload-to-s3')
 
 function getHtml (html = '', css = '', baseUrl = '') {
