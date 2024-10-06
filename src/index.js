@@ -1,3 +1,4 @@
+'use strict';
 const execSync = require('child_process').execSync
 const puppeteer = require('puppeteer-core')
 const chromium = require('@sparticuz/chromium')
@@ -24,7 +25,8 @@ function getOptions (input) {
     css: input.css,
     width: Math.ceil(Number(input.width || DEFAULT_WIDTH)),
     height: Math.ceil(Number(input.height || DEFAULT_HEIGHT)),
-    baseUrl: input.base_url
+    baseUrl: input.base_url,
+    fullPage: input.fullPage || false
   }
 }
 

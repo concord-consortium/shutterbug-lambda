@@ -1,31 +1,32 @@
 {
   "name": "shutterbug-lambda",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/concord-consortium/shutterbug-lambda.git"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "package": "npm run package-prepare && cd dist && zip -rq ../package.zip .",
-    "package-prepare": "npm run babel && npm run copy-fonts && npm run copy-packagejson && cd dist && npm install --production",
-    "babel": "rm -rf dist && mkdir dist && ./node_modules/.bin/babel src --out-dir dist",
+    "package-prepare": "npm run copy-src && npm run copy-packagejson && cd dist && npm install --omit=dev",
+    "copy-src": "rm -rf dist && mkdir dist && cp -r src/* dist/",
     "copy-packagejson": "cp -r package.json dist",
-    "copy-fonts": "cp -r src/fonts dist/",
     "test": "node src/test.js",
     "server": "node src/test-server.js",
     "server-non-headless": "HEADLESS=false node src/test-server.js",
     "lint": "standard --fix src/**/*.js"
   },
   "dependencies": {
-    "@sparticuz/chromium": "123.0.1",
-    "puppeteer-core": "22.8.1",
-    "aws-sdk": "^2.1612.0"
+    "@aws-sdk/client-s3": "^3.664.0",
+    "@aws-sdk/lib-storage": "^3.664.0",
+    "@sparticuz/chromium": "126.0.0",
+    "puppeteer-core": "22.13.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "puppeteer": "22.8.1",
+    "puppeteer": "22.13.1",
     "standard": "^17.1.0"
   }
 }

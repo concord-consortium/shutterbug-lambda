@@ -11,6 +11,10 @@ https://api.concord.org/shutterbug-staging
 - `curl --data '{"content":"<p>Hello world!</p>","css":"<style>p { color: red; margin: 70px; }</style>","width":"400","height":"200","base_url":"http://concord.org"}' https://api.concord.org/shutterbug-production`
 - `curl --data '{"url":"http://concord.org","width":1000,"height":800}' https://api.concord.org/shutterbug-production`
 
+## Local setup
+
+In AWS this runs with a version of Node specified by shutterbug-lambda CloudFormation template. The same version of Node should be used for local development. The package.json `engines.node` version should match the version used in AWS.
+
 ## Basic test
 
 `npm run test` will run a simple test using Chrome in a regular, headless mode.
@@ -50,7 +54,9 @@ You can find Shutterbug template in the dedicated repository: https://github.com
 ### Deploy new Lambda code
 
 - Run `npm run package` to create a `package.zip` archive
-- Rename it to `package-v<VERSION>.zip` and upload to [concord-devops/shutterbug-lambda](https://s3.console.aws.amazon.com/s3/buckets/concord-devops?region=us-east-1&prefix=shutterbug-lambda/) S3 bucket
+- Rename it to `package-v<VERSION>.zip`
+- Upload to [concord-devops/shutterbug-lambda](https://s3.console.aws.amazon.com/s3/buckets/concord-devops?region=us-east-1&prefix=shutterbug-lambda/) S3 bucket
+  You can use aws cli to do this with `aws s3 cp package-v1.5.0.zip s3://concord-devops/shutterbug-lambda/`
 - Open [Shutterbug AWS CloudFormation](https://us-east-1.console.aws.amazon.com/cloudformation)
   and look for "shutterbug" or "shutterbug-staging" stack
 - Open production or staging stack, click "Update" button, and provide name of the newly uploaded Zip archive in the stack parameters
